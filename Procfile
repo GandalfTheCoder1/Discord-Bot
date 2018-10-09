@@ -1,1 +1,1 @@
-worker: python Discord Bot DSA4.1.py
+worker: python Discord bot DSA4.1.py
