@@ -304,8 +304,8 @@ async def on_message(message):
                                 newval = a[0] - a[1]
                                 checkfor1 = 0
                                 checkfor20 = 0
-                                m_success = "Your roll: "+str(x)+" ==> Succeeded!"
-                                m_failure = "Your roll: "+str(x)+" ==> Failed!"
+                                m_success = "Du hast gewürfelt: "+str(x)+" ==> Gelungen!"
+                                m_failure = "Du hast gewürfelt: "+str(x)+" ==> Misslungen!"
                                 if x < newval and x != 1:
                                         await Client.send_message(message.channel, m_success)
                                 elif x == newval:
@@ -317,20 +317,20 @@ async def on_message(message):
                                         x = random.randint(1,20)
                                         rolls.append(x)
                                         if  x > newval:
-                                                rollsstr= "Your roll: " +str(rolls[0])+ " Check for Botch: " +str(rolls[1])+ " ==> BOTCH"
+                                                rollsstr= "Du hast gewürfelt: " +str(rolls[0])+ " Patzer bestätigen: " +str(rolls[1])+ " ==> PATZER"
                                                 await Client.send_message(message.channel, rollsstr)
                                         else:
-                                                rollsstr="Your roll: "+str(rolls[0])+" Check for Botch: "+str(rolls[1])+" ==> Failed"
+                                                rollsstr="Du hast gewürfelt: "+str(rolls[0])+" Patzer bestätigen: "+str(rolls[1])+" ==> Misslungen(Patzer nicht bestätigen)"
                                                 await Client.send_message(message.channel, rollsstr)
                                 elif x == 1:
                                         rolls.append(x)
                                         x = random.randint(1,20)
                                         rolls.append(x)
                                         if  x < a[0]:
-                                                rollsstr= "Your roll: " +str(rolls[0])+ " Check for Critical success: " +str(rolls[1])+ " ==> CRITICAL SUCCESS"
+                                                rollsstr= "Du hast gewürfelt: " +str(rolls[0])+ " Auf kritischen Erfolg überprüfen: " +str(rolls[1])+ " ==> KRITISCHER ERFOLG!"
                                                 await Client.send_message(message.channel, rollsstr)
                                         else:
-                                                rollsstr="Your roll: "+str(rolls[0])+" Check for Critical success: "+str(rolls[1])+" ==> Success"
+                                                rollsstr="Du hast gewürfelt: "+str(rolls[0])+" Auf kritischen Erfolg überprüfen: "+str(rolls[1])+" ==> Gelungen"
                                                 await Client.send_message(message.channel, rollsstr)
         elif message.content.startswith('*'):
                 a = [int(num) for num in re.findall(r"\d+", message.content)]
