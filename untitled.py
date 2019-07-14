@@ -387,7 +387,24 @@ async def on_message(message):
 
         elif message.content == '%help' :
                 await Client.send_message(message.channel, "Common Commands: \n -`(<how many dices?>d<how many sides>)` lets you roll various dices. you can even add, multiply, subtract, or divide a number from the sum of all dices. EXAMPLE: (3d6+5) \n - `!` rolls 1d20 \n\n The Dark eye Commands:\n\n- `!<attribute>` lets you roll for a specific attribute. You can even add a modifier. EXAMPLE: !13,+2 \n- `!<attribute>,<attribute>,<attribute>,<skill value>` lets you roll for a Skill. You can even add a modifier. EXAMPLE: !13,14,13,5,-3 \n\nCall of Cthulhu Commands:\n\n- `*<Skill>` lets you roll for a skill. EXAMPLE: *50")
-
+        elif message.content == 'zone':
+                x = random.randint(1,20)
+                print(x)
+                if x == 1 or x == 3 or x == 5:
+                        zone = str(x)+": linkes Bein \nErste und zweite Wunde: AT, PA, GE, INI-Basis -2, GS -1 \nDritte Wunde: Sturz, kampfunfähig"
+                elif x == 2 or x == 4 or x == 6:
+                        zone = str(x)+": linkes Bein \nErste und zweite Wunde: AT, PA, GE, INI-Basis -2, GS -1 \nDritte Wunde: Sturz, kampfunfähig"
+                elif x in range(7,8):
+                        zone = str(x)+": Bauch \nErste und zweite Wunde: AT, PA, KO, KK, GS, INI-Basis -1, 1W6 TP \nDritte Wunde: Bewusstlos, Blutverlust"
+                elif x == 9 or x == 11 or x == 13:
+                        zone = str(x)+": linker Arm: \nErste und zweite Wunde: AT, PA, KK, FF -2 mit diesem Arm \nDritte Wunde: Arm handlungsunfähig"
+                elif x == 10 or x == 12 or x == 14:
+                        zone = str(x)+": rechter Arm: \nErste und zweite Wunde: AT, PA, KK, FF -2 mit diesem Arm \nDritte Wunde: Arm handlungsunfähig"
+                elif x in range(15,18):
+                        zone = str(x)+": Brust: \nErste und zweite Wunde: AT, PA, KO, KK -1, 1W6 TP \nDritte Wunde: bewusstlos, Blutverlust"
+                elif x == 19 or x == 20:
+                        zone = str(x)+": Kopf: \nEste und zweite Wunde: MU, KL, IN, INI-Basis -2, INI -2w6 \nDritte Wunde: 2W6 TP, Blutverlust"
+                await Client.send_message(message.channel, zone)
 
 
 
