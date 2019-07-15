@@ -497,4 +497,4 @@ async def on_message(message):
 
 
 
-Client.run("NDMxNzk3MDY0MjM4NzU5OTM3.DakJXg.gu8eWyH0iwU7S842H7W2RTAjrsw")
+Client.run("NjAwMjc5MDQ4MTkwNjg5MzAw.XSxb3w.NhEWKjwcCzKKfknqhXCR0zpQAdU")
