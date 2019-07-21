@@ -435,7 +435,8 @@ async def on_message(message):
                                 answer = "Your roll: "+str(x)+" ==> Failed"
                                 await Client.send_message(message.channel, '<@!'+uid+'>  ' + answer)
         elif message.content.startswith('+'):
-                a = [int(num) for num in re.findall(r"\d+", '<@!'+uid+'>  ' + message.content)]
+                uid = str(message.author.id)
+                a = [int(num) for num in re.findall(r"\d+", message.content)]
                 rolls = []
                 successcount = 0
                 botchcount = 0
@@ -448,14 +449,14 @@ async def on_message(message):
                         elif x == 1:
                                botchcount += 1
                         a[0] -= 1
-                answer = "Your rolls: "+",".join(str(x) for x in rolls)+" ==> "+str(successcount)+" success(es)"
+                answer = "<@!"+uid+" Your rolls: "+",".join(str(x) for x in rolls)+" ==> "+str(successcount)+" success(es)"
                 if botchcount < botchcheck:
                         await Client.send_message(message.channel,answer)
                 elif botchcount > botchcheck and successcount == 0:
-                        answer = "Your rolls: "+",".join(str(x) for x in rolls)+" ==> CRITICAL BOTCH!"
+                        answer = "<@!"+uid+" Your rolls: "+",".join(str(x) for x in rolls)+" ==> CRITICAL BOTCH!"
                         await Client.send_message(message.channel,answer)
                 elif botchcount > botchcheck:
-                        answer = "Your rolls: "+",".join(str(x) for x in rolls)+" ==> BOTCH! "+str(successcount)+" success(es)"
+                        answer = "<@!"+uid+" Your rolls: "+",".join(str(x) for x in rolls)+" ==> BOTCH! "+str(successcount)+" success(es)"
                         await Client.send_message(message.channel,answer)
 
         elif message.content == '%help' :
