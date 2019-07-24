@@ -125,8 +125,15 @@ async def on_message(message):
                         while roll3 > value3:
                                 value4 -= 1
                                 roll3 -= 1
+                        maxeig = max(a[0],a[1],a[2])
+                        maxroll = max(rolls)
+                        if maxeig > maxroll:
+                                maxersch0 = maxeig - maxroll
+                                maxersch = str(maxersch0 + value4)
+                        else:
+                                maxersch = str(value4)
                         rollsstrf = "Du hast gewürfelt: " + ", ".join(str(x) for x in rolls) + " \nP*: " + str(value4) + " ==>"+" Misslungen!"
-                        rollsstrs = "Du hast gewürfelt: " + ", ".join(str(x) for x in rolls) + " \nP*: " + str(value4) + " ==> Gelungen!"
+                        rollsstrs = "Du hast gewürfelt: " + ", ".join(str(x) for x in rolls) + " \nP*: " + str(value4) + " ==> Gelungen! \nMaximale Erschwernis: "+maxersch
                         if checkfor1 == 2 or checkfor1 == 3:
                                 rollsstrc = "Du hast gewürfelt: " + ", ".join(str(x) for x in rolls) + " ==> KRITISCHER ERFOLG!"
                                 await Client.send_message(message.channel,  '<@!'+uid+'>  ' + rollsstrc)
@@ -135,7 +142,7 @@ async def on_message(message):
                                 await Client.send_message(message.channel,  '<@!'+uid+'>  ' + rollsstrb)
                         elif value4 == 0:
                                 qualitylevel1 = 1
-                                rollsstrs = "Du hast gewürfelt: " + ", ".join(str(x) for x in rolls) + " \nP*: " + str(value4) + " ==> Gelungen!"
+                                rollsstrs = "Du hast gewürfelt: " + ", ".join(str(x) for x in rolls) + " \nP*: 1 ==> Gelungen! \nMaximale Erschwernis: "+maxersch
                                 await Client.send_message(message.channel,  '<@!'+uid+'>  ' + rollsstrs)
                         elif value4 > 0:
                                 await Client.send_message(message.channel,  '<@!'+uid+'>  ' + rollsstrs)
@@ -148,8 +155,10 @@ async def on_message(message):
                         x = random.randint(1,20)
                         checkfor1 = 0
                         checkfor20 = 0
-                        m_success = "Du hast gewürfelt: "+str(x)+" ==> Gelungen!"
-                        m_failure = "Du hast gewürfelt: "+str(x)+" ==> Misslungen!"
+                        maxersch = str(a[0] - x)
+                        benerl = str(x - a[0])
+                        m_success = "Du hast gewürfelt: "+str(x)+" ==> Gelungen! \nMaximale Erschwernis: "+maxersch
+                        m_failure = "Du hast gewürfelt: "+str(x)+" ==> Misslungen! \nBenötigte Erleichterung: "+benerl
                         if x < a[0] and x != 1:
                                 await Client.send_message(message.channel, '<@!'+uid+'>  ' + m_success)
                         elif x == a[0]:
@@ -164,7 +173,7 @@ async def on_message(message):
                                         rollsstr= "Du hast gewürfelt: " +str(rolls[0])+ " Patzer bestätigen: " +str(rolls[1])+ " ==> PATZER!"
                                         await Client.send_message(message.channel, '<@!'+uid+'>  ' + rollsstr)
                                 else:
-                                        rollsstr="Du hast gewürfelt: "+str(rolls[0])+" Patzer bestätigen: "+str(rolls[1])+" ==> Misslungen(Patzer nicht bestätigt)"
+                                        rollsstr="Du hast gewürfelt: "+str(rolls[0])+" Patzer bestätigen: "+str(rolls[1])+" ==> Misslungen(Patzer nicht bestätigt) \nBenötigte Erleichterung: "+benerl
                                         await Client.send_message(message.channel, '<@!'+uid+'>  ' + rollsstr)
                         elif x == 1:
                                 rolls.append(x)
@@ -174,7 +183,7 @@ async def on_message(message):
                                         rollsstr= "Du hast gewürfelt: " +str(rolls[0])+ " Kritischer Erfolg bestätigen: " +str(rolls[1])+ " ==> KRITISCHER ERFOLG!"
                                         await Client.send_message(message.channel, '<@!'+uid+'>  ' + rollsstr)
                                 else:
-                                        rollsstr= "Du hast gewürfelt: "+str(rolls[0])+" Kritischer Erfolg bestätigen: "+str(rolls[1])+" ==> Gelungen(Kritischer Erfolg nicht bestätigt)"
+                                        rollsstr= "Du hast gewürfelt: "+str(rolls[0])+" Kritischer Erfolg bestätigen: "+str(rolls[1])+" ==> Gelungen(Kritischer Erfolg nicht bestätigt) \nMaximale Erschwernis: "+maxersch
                                         await Client.send_message(message.channel, '<@!'+uid+'>  ' + rollsstr)
                 elif len(a) == 5:
                         uid = str(message.author.id)
@@ -203,12 +212,19 @@ async def on_message(message):
                                 while roll3 > a[2]:
                                         value4 -= 1
                                         roll3 -= 1
+                                maxeig = max(a[0], a[1], a[2])
+                                maxroll = max(rolls)
+                                if maxeig > maxroll:
+                                        maxersch0 = maxeig - maxroll
+                                        maxersch = str(maxersch0 + value4)
+                                else:
+                                        maxersch = str(value4)
                                 if value4 > a[3]:
                                         value4 = a[3]
                                 else:
                                         value4 = value4
                                 rollsstrf = "Du hast gewürfelt: " + ", ".join(str(x) for x in rolls) + " \nP*: " + str(value4) + " ==>"+" Misslungen!!"
-                                rollsstrs = "Du hast gewürfelt: " + ", ".join(str(x) for x in rolls) + " \nP*: " + str(value4) + " ==> Gelungen!"
+                                rollsstrs = "Du hast gewürfelt: " + ", ".join(str(x) for x in rolls) + " \nP*: " + str(value4) + " ==> Gelungen! \nMaximaler zusätzlicher Modifikator: "+maxersch
                                 if checkfor1 == 2 or checkfor1 == 3:
                                         rollsstrc = "Du hast gewürfelt: " + ",".join(str(x) for x in rolls) + " \nP*: " + str(value4) + " ==> KRITISCHER ERFOLG!"
                                         await Client.send_message(message.channel, '<@!'+uid+'>  ' + rollsstrc)
@@ -217,7 +233,7 @@ async def on_message(message):
                                         await Client.send_message(message.channel, '<@!'+uid+'>  ' + rollsstrb)
                                 elif value4 == 0:
                                         qualitylevel = 1
-                                        rollsstrs = "Du hast gewürfelt: " + ", ".join(str(x) for x in rolls) + " \nP*: " + str(value4) + " ==> Gelungen!"
+                                        rollsstrs = "Du hast gewürfelt: " + ", ".join(str(x) for x in rolls) + " \nP*: 1 ==> Gelungen! \nMaximaler zusätzlicher Modifikator: "+maxersch
                                         await Client.send_message(message.channel, '<@!'+uid+'>  ' + rollsstrs)
                                 elif value4 > 0 or value4 == 0:
                                         await Client.send_message(message.channel, '<@!'+uid+'>  ' + rollsstrs)
@@ -253,10 +269,17 @@ async def on_message(message):
                                 while roll3 > a[2]:
                                         value4 -= 1
                                         roll3 -= 1
+                                maxeig = max(a[0], a[1], a[2])
+                                maxroll = max(rolls)
+                                if maxeig > maxroll:
+                                        maxersch0 = maxeig - maxroll
+                                        maxersch = str(maxersch0 + value4)
+                                else:
+                                        maxersch = str(value4)
                                 qualitylevel = value4/3
                                 qualitylevel1 = math.ceil(qualitylevel)
                                 rollsstrf = "Du hast gewürfelt: " + ", ".join(str(x) for x in rolls) + " \nP*: " + str(value4) + " ==> Misslungen!"
-                                rollsstrs = "Du hast gewürfelt: " + ", ".join(str(x) for x in rolls) + " \nP*: " + str(value4) + " ==> Gelungen!"
+                                rollsstrs = "Du hast gewürfelt: " + ", ".join(str(x) for x in rolls) + " \nP*: " + str(value4) + " ==> Gelungen! \nMaximaler zusätzlicher Modifikator: "+maxersch
                                 if checkfor1 == 2 or checkfor1 == 3:
                                         rollsstrc = "Du hast gewürfelt: " + ",".join(str(x) for x in rolls) + " ==> KRITISCHER ERFOLG!"
                                         await Client.send_message(message.channel, '<@!'+uid+'>  ' + rollsstrc)
@@ -265,7 +288,7 @@ async def on_message(message):
                                         await Client.send_message(message.channel, '<@!'+uid+'>  ' + rollsstrb)
                                 elif value4 == 0:
                                         qualitylevel = 1
-                                        rollsstrs = "Du hast gewürfelt: " + ", ".join(str(x) for x in rolls) + " \nP*: " + str(value4) + " ==> Gelungen!"
+                                        rollsstrs = "Du hast gewürfelt: " + ", ".join(str(x) for x in rolls) + " \nP*: 1 ==> Gelungen! \nMaximaler zusätzlicher Modifikator: "+maxersch
                                         await Client.send_message(message.channel, '<@!'+uid+'>  ' + rollsstrs)
                                 elif value4 > 0 or value4 == 0:
                                         await Client.send_message(message.channel, '<@!'+uid+'>  ' + rollsstrs)
@@ -301,10 +324,17 @@ async def on_message(message):
                                 while roll3 > a[2]:
                                         value4 -= 1
                                         roll3 -= 1
+                                maxeig = max(a[0], a[1], a[2])
+                                maxroll = max(rolls)
+                                if maxeig > maxroll:
+                                        maxersch0 = maxeig - maxroll
+                                        maxersch = str(maxersch0 + value4)
+                                else:
+                                        maxersch = str(value4)
                                 qualitylevel = value4/3
                                 qualitylevel1 = math.ceil(qualitylevel)
                                 rollsstrf = "Du hast gewürfelt: " + ", ".join(str(x) for x in rolls) + " \nP*: " + str(value4) + " ==> Misslungen!"
-                                rollsstrs = "Du hast gewürfelt: " + ", ".join(str(x) for x in rolls) + " \nP*: " + str(value4) + " ==> Gelungen!"
+                                rollsstrs = "Du hast gewürfelt: " + ", ".join(str(x) for x in rolls) + " \nP*: " + str(value4) + " ==> Gelungen! \nMaximaler zusätzlicher Modifikator: "+maxersch
                                 if checkfor1 == 2 or checkfor1 == 3:
                                         rollsstrc = "Du hast gewürfelt: " + ",".join(str(x) for x in rolls) + " ==> KRITISCHER ERFOLG!"
                                         await Client.send_message(message.channel, '<@!'+uid+'>  ' + rollsstrc)
@@ -313,7 +343,7 @@ async def on_message(message):
                                         await Client.send_message(message.channel, '<@!'+uid+'>  ' + rollsstrb)
                                 elif value4 == 0:
                                         qualitylevel = 1
-                                        rollsstrs = "Du hast gewürfelt: " + ", ".join(str(x) for x in rolls) + " \nP*: " + str(value4) + " ==> Gelungen!"
+                                        rollsstrs = "Du hast gewürfelt: " + ", ".join(str(x) for x in rolls) + " \nP*: 1 ==> Gelungen!\n Maximaler zusätzlicher Modifikator: "+maxersch
                                         await Client.send_message(message.channel, '<@!'+uid+'>  ' + rollsstrs)
                                 elif value4 > 0 or value4 == 0:
                                         await Client.send_message(message.channel, '<@!'+uid+'>  ' + rollsstrs)
@@ -325,10 +355,12 @@ async def on_message(message):
                                 rolls = []
                                 x = random.randint(1,20)
                                 newval = a[0] + a[1]
+                                maxersch = str(newval - x)
+                                benerl = str(x - newval)
                                 checkfor1 = 0
                                 checkfor20 = 0
-                                m_success = "Du hast gewürfelt: "+str(x)+" ==> Gelungen!"
-                                m_failure = "Your roll: "+str(x)+" ==> Misslungen!"
+                                m_success = "Du hast gewürfelt: "+str(x)+" ==> Gelungen! \nMaximale Erschwernis: "+maxersch
+                                m_failure = "Your roll: "+str(x)+" ==> Misslungen! \nBenötigte Erleichterung: "+benerl
                                 if x < newval and x != 1:
                                         await Client.send_message(message.channel, '<@!'+uid+'>  ' + m_success)
                                 elif x == newval:
@@ -343,7 +375,7 @@ async def on_message(message):
                                                 rollsstr= "Du hast gewürfelt: " +str(rolls[0])+ " Patzer bestätigen: " +str(rolls[1])+ " ==> PATZER"
                                                 await Client.send_message(message.channel, '<@!'+uid+'>  ' + rollsstr)
                                         else:
-                                                rollsstr="Du hast gewürfelt: "+str(rolls[0])+" Patzer bestätigen: "+str(rolls[1])+" ==> Misslungen(Patzer nicht bestätigt)"
+                                                rollsstr="Du hast gewürfelt: "+str(rolls[0])+" Patzer bestätigen: "+str(rolls[1])+" ==> Misslungen(Patzer nicht bestätigt)\nBenötigte Erleichterung: "+benerl
                                                 await Client.send_message(message.channel, '<@!'+uid+'>  ' + rollsstr)
                                 elif x == 1:
                                         rolls.append(x)
@@ -353,16 +385,18 @@ async def on_message(message):
                                                 rollsstr= "Du hast gewürfelt: " +str(rolls[0])+ " Auf kritischen Erfolg überprüfen: " +str(rolls[1])+ " ==> KRITISCHER ERFOLG!"
                                                 await Client.send_message(message.channel, '<@!'+uid+'>  ' + rollsstr)
                                         else:
-                                                rollsstr="Du hast gewürfelt: "+str(rolls[0])+" Auf kritischen Erfolg überorüfen: "+str(rolls[1])+" ==> Gelungen(Kritischer Erfolg nicht bestätigt)"
+                                                rollsstr="Du hast gewürfelt: "+str(rolls[0])+" Auf kritischen Erfolg überorüfen: "+str(rolls[1])+" ==> Gelungen(Kritischer Erfolg nicht bestätigt) \nMaximale Erschwernis: "+maxersch
                                                 await Client.send_message(message.channel, '<@!'+uid+'>  ' + rollsstr)
                         elif '+' in message.content:
                                 rolls = []
                                 x = random.randint(1,20)
                                 newval = a[0] - a[1]
+                                maxersch = str(newval - x)
+                                benerl = str(x - newval)
                                 checkfor1 = 0
                                 checkfor20 = 0
-                                m_success = "Du hast gewürfelt: "+str(x)+" ==> Gelungen!"
-                                m_failure = "Du hast gewürfelt: "+str(x)+" ==> Misslungen!"
+                                m_success = "Du hast gewürfelt: "+str(x)+" ==> Gelungen! \nMaximale Erschwernis: "+maxersch
+                                m_failure = "Du hast gewürfelt: "+str(x)+" ==> Misslungen! \nBenötigte Erleichterung: "+benerl
                                 if x < newval and x != 1:
                                         await Client.send_message(message.channel, '<@!'+uid+'>  ' + m_success)
                                 elif x == newval:
@@ -383,10 +417,12 @@ async def on_message(message):
                                 rolls = []
                                 x = random.randint(1,20)
                                 newval = a[0] - a[1]
+                                maxersch = str(newval - x)
+                                benerl = str(x - newval)
                                 checkfor1 = 0
                                 checkfor20 = 0
-                                m_success = "Du hast gewürfelt: "+str(x)+" ==> Gelungen!"
-                                m_failure = "Du hast gewürfelt: "+str(x)+" ==> Misslungen!"
+                                m_success = "Du hast gewürfelt: "+str(x)+" ==> Gelungen! \nMaximale Erschwernis: "+maxersch
+                                m_failure = "Du hast gewürfelt: "+str(x)+" ==> Misslungen! \nBenötigte Erleichterung: "+benerl
                                 if x < newval and x != 1:
                                         await Client.send_message(message.channel, '<@!'+uid+'>  ' + m_success)
                                 elif x == newval:
@@ -401,7 +437,7 @@ async def on_message(message):
                                                 rollsstr= "Du hast gewürfelt: " +str(rolls[0])+ " Patzer bestätigen: " +str(rolls[1])+ " ==> PATZER"
                                                 await Client.send_message(message.channel, '<@!'+uid+'>  ' + rollsstr)
                                         else:
-                                                rollsstr="Du hast gewürfelt: "+str(rolls[0])+" Patzer bestätigen: "+str(rolls[1])+" ==> Misslungen(Patzer nicht bestätigt"
+                                                rollsstr="Du hast gewürfelt: "+str(rolls[0])+" Patzer bestätigen: "+str(rolls[1])+" ==> Misslungen(Patzer nicht bestätigt)\nBenötigte Erleichterung: "+benerl
                                                 await Client.send_message(message.channel, '<@!'+uid+'>  ' + rollsstr)
                                 elif x == 1:
                                         rolls.append(x)
@@ -411,7 +447,7 @@ async def on_message(message):
                                                 rollsstr= "Du hast gewürfelt: " +str(rolls[0])+ " Auf kritischen Erfolg überprüfen: " +str(rolls[1])+ " ==> KRITISCHER ERFOLG!"
                                                 await Client.send_message(message.channel, '<@!'+uid+'>  ' + rollsstr)
                                         else:
-                                                rollsstr="Du hast gewürfelt: "+str(rolls[0])+" Auf kritischen Erfolg überprüfen: "+str(rolls[1])+" ==> Gelungen"
+                                                rollsstr="Du hast gewürfelt: "+str(rolls[0])+" Auf kritischen Erfolg überprüfen: "+str(rolls[1])+" ==> Gelungen(kritischer Erfolg nicht bestätigt) \nMaximale Erschwernis: "+maxersch
                                                 await Client.send_message(message.channel, '<@!'+uid+'>  ' + rollsstr)
         elif message.content.startswith('*'):
                 uid = str(message.author.id)
