@@ -6,8 +6,6 @@ import asyncio
 import random
 import math
 Client = discord.Client()
-inilist = ['INI Liste:\n']
-iniuser = []
 
 @Client.event
 async def on_ready():
@@ -537,65 +535,6 @@ async def on_message(message):
                 elif result == 12:
                         patzer = str(result)+": Schwerer Eigentreffer! \nINI -4. Der Betroffene erleidet schweren Schaden durch eigene Waffe(TP auswürfeln und verdoppeln; keine zusätzlichen TP aus hoher KK oder Ansagen) und eventuell sogar eine Wunde(bei mehr als KO/2 SP) mit den dort genannten Folgen; INI -4 wegen Desorientierung."
                 await Client.send_message(message.channel, patzer)
-        elif message.content.startswith('INI') or message.content.startswith('ini'):
-                findname = re.sub("[^\w]", " ", message.content).split()
-                if len(findname) == 3:
-                        if '+' in message.content:
-                                a = [int(num) for num in re.findall(r"\d+", message.content)]
-                                name = findname[1]
-                                for i in inilist:
-                                        if name in i:
-                                                b = [int(num) for num in re.findall(r"\d+", i)]
-                                                inilist.remove(i)
-                                                newini = a[0] + b[0]
-                                                newentry = name+': '+str(newini)
-                                                inilist.append(newentry)
-                                                await Client.send_message(message.channel, 'Die INI von '+name+' wurde um '+str(a[0])+' erhöht')
-                                        else:
-                                                await Client.send_message(message.channel, name+' ist nicht in der INI-Liste drin...')
-                        elif '-' in message.content:
-                                a = [int(num) for num in re.findall(r"\d+", message.content)]
-                                name = findname[1]
-                                for i in inilist:
-                                        if name in i:
-                                                b = [int(num) for num in re.findall(r"\d+", i)]
-                                                inilist.remove(i)
-                                                newini = a[0] - b[0]
-                                                newentry = name+': '+str(newini)
-                                                inilist.append(newentry)
-                                                await Client.send_message(message.channel, 'Die INI von '+name+' wurde um '+str(a[0])+' verringert')
-                                        else:
-                                                await Client.send_message(message.channel, name+' ist nicht in der INI-Liste drin...')
-                        elif 'alle löschen' in message.content:
-                                inilist.clear()
-                                iniuser.clear()
-                                await Client.send_message(message.channel, 'Die INI-Liste wurde gelöscht')
-                        elif 'löschen' in message.content:
-                                findname = re.sub("[^\w]", " ", message.content).split()
-                                name = findname[1]
-                                for i in inilist:
-                                        if name in i:
-                                                inilist.remove(i)
-                                                await Client.send_message(message.channel, name+" wurde aus der INI-Liste entfernt!")
-                        else:
-                                name = findname[1]
-                                inibase = int(findname[2])
-                                die = random.randint(1,6)
-                                yourini = die + inibase
-                                ininame = name+': ' + str(yourini)
-                                if name in iniuser:
-                                        await Client.send_message(message.channel, name+' ist bereits in der INI-Liste...')
-                                else:
-                                        iniuser.append(name)
-                                        inilist.append(ininame)
-                                        await Client.send_message(message.channel, 'die INI von '+name+' wurde der Liste hinzugefügt und beträgt '+str(yourini))
-
-                if 'liste' in message.content:
-                        if len(inilist) > 0:
-                                inistr = '\n'.join(inilist)
-                                await Client.send_message(message.channel, inistr)
-                        else:
-                                await Client.send_message(message.channel, 'Die INI-Liste ist leer!')
         elif message.content.startswith('BF'):
                 a = [int(num) for num in re.findall(r"\d+", message.content)]
                 roll1 = random.randint(1,6)
