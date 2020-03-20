@@ -6,7 +6,9 @@ import asyncio
 import random
 import math
 Client = discord.Client()
-
+inilist = ['INI Liste:\n']
+iniuser = []
+userlep = []
 @Client.event
 async def on_ready():
         print("logged in as: ")
@@ -385,11 +387,11 @@ async def on_message(message):
                                         rolls.append(x)
                                         x = random.randint(1,20)
                                         rolls.append(x)
-                                        if  x < a[0]:
+                                        if  x < a[0] or x == a[0]:
                                                 rollsstr= "Du hast gewürfelt: " +str(rolls[0])+ " Auf kritischen Erfolg überprüfen: " +str(rolls[1])+ " ==> KRITISCHER ERFOLG!"
                                                 await Client.send_message(message.channel, '<@!'+uid+'>  ' + rollsstr)
                                         else:
-                                                rollsstr="Du hast gewürfelt: "+str(rolls[0])+" Auf kritischen Erfolg überorüfen: "+str(rolls[1])+" ==> Gelungen(Kritischer Erfolg nicht bestätigt) \nMaximale Erschwernis: "+maxersch
+                                                rollsstr="Du hast gewürfelt: "+str(rolls[0])+" Auf kritischen Erfolg überprüfen: "+str(rolls[1])+" ==> Gelungen(Kritischer Erfolg nicht bestätigt) \nMaximale Erschwernis: "+maxersch
                                                 await Client.send_message(message.channel, '<@!'+uid+'>  ' + rollsstr)
                         elif '+' in message.content:
                                 rolls = []
@@ -535,6 +537,74 @@ async def on_message(message):
                 elif result == 12:
                         patzer = str(result)+": Schwerer Eigentreffer! \nINI -4. Der Betroffene erleidet schweren Schaden durch eigene Waffe(TP auswürfeln und verdoppeln; keine zusätzlichen TP aus hoher KK oder Ansagen) und eventuell sogar eine Wunde(bei mehr als KO/2 SP) mit den dort genannten Folgen; INI -4 wegen Desorientierung."
                 await Client.send_message(message.channel, patzer)
+        elif message.content.startswith('INI') or message.content.startswith('ini'):
+                findname = re.sub("[^\w]", " ", message.content).split()
+                if len(findname) == 3:
+                        if '+' in message.content:
+                                a = [int(num) for num in re.findall(r"\d+", message.content)]
+                                name = findname[1]
+                                for i in inilist:
+                                        if name in i:
+                                                b = [int(num) for num in re.findall(r"\d+", i)]
+                                                inilist.remove(i)
+                                                newini = a[0] + b[0]
+                                                newentry = name+': '+str(newini)
+                                                inilist.append(newentry)
+                                                await Client.send_message(message.channel, 'Die INI von '+name+' wurde um '+str(a[0])+' erhöht')
+                                        else:
+                                                await Client.send_message(message.channel, name+' ist nicht in der INI-Liste drin...')
+                        elif '-' in message.content:
+                                a = [int(num) for num in re.findall(r"\d+", message.content)]
+                                name = findname[1]
+                                for i in inilist:
+                                        x = 0
+                                        if name in i:
+                                                b = [int(num) for num in re.findall(r"\d+", i)]
+                                                newini = b[0] - a[0]
+                                                inilist.remove(i)
+                                                newentry = name+': '+str(newini)
+                                                await Client.send_message(message.channel, 'Die INI von '+name+' wurde um '+str(a[0])+' verringert')
+                                                x = 1
+                                if x == 0:
+                                        await Client.send_message(message.channel, name+' ist nicht in der INI-Liste drin...')
+                                inilist.append(newentry)
+
+
+
+                        elif 'alle löschen' in message.content:
+                                if len(inilist) > 0:
+                                        await Client.send_message(message.channel, 'Die INI-Liste wurde gelöscht')
+                                        inilist.clear()
+                                        iniuser.clear()
+                                else:
+                                        await Client.send_message(message.channel, 'Die INI-Liste ist bereits leer...')
+                        elif 'löschen' in message.content:
+                                findname = re.sub("[^\w]", " ", message.content).split()
+                                name = findname[1]
+                                for i in inilist:
+                                        if name in i:
+                                                inilist.remove(i)
+                                                iniuser.remove(name)
+                                                await Client.send_message(message.channel, name+" wurde aus der INI-Liste entfernt!")
+                        else:
+                                name = findname[1]
+                                inibase = int(findname[2])
+                                die = random.randint(1,6)
+                                yourini = die + inibase
+                                ininame = name+': ' + str(yourini)
+                                if name in iniuser:
+                                        await Client.send_message(message.channel, name+' ist bereits in der INI-Liste...')
+                                else:
+                                        iniuser.append(name)
+                                        inilist.append(ininame)
+                                        await Client.send_message(message.channel, 'die INI von '+name+' wurde der Liste hinzugefügt und beträgt '+str(yourini))
+
+                if 'liste' in message.content:
+                        if len(inilist) > 0:
+                                inistr = '\n'.join(inilist)
+                                await Client.send_message(message.channel, inistr)
+                        else:
+                                await Client.send_message(message.channel, 'Die INI-Liste ist leer!')
         elif message.content.startswith('BF'):
                 a = [int(num) for num in re.findall(r"\d+", message.content)]
                 roll1 = random.randint(1,6)
@@ -547,6 +617,69 @@ async def on_message(message):
                         await Client.send_message(message.channel, 'Dein Ergebnis: '+str(BF)+'\nDer Bruchfaktor verändert sich nicht. Der Angreifer muss auch einen Bruchtest ablegen.')
                 else:
                         await Client.send_message(message.channel, 'Dein Ergebnis: '+str(BF)+'\nDer Bruchfaktor erhöht sich um 1. Der Angreifer muss auch einen Bruchtest ablegen.')
+        elif message.content.startswith('LeP'):
+                findname = re.sub("[^\w]", " ", message.content).split()
+                if 'neu' in message.content:
+                        name = findname[1]
+                        a = [int(num) for num in re.findall(r"\d+", message.content)]
+                        lepname = name+': '+str(a[0])
+                        if name in userlep:
+                                await Client.send_message(message.channel, 'Du hast deine LeP bereits notiert...')
+                        else:
+                                userlep.append(lepname)
+                                await Client.send_message(message.channel, 'Du hast die LeP von '+name+' notiert')
+                elif 'liste' in message.content:
+                        if len(userlep) > 0:
+                                inistr = '\n'.join(userlep)
+                                await Client.send_message(message.channel, inistr)
+                        else:
+                                await Client.send_message(message.channel, 'Die LeP-Liste ist leer!')
+                elif '-' in message.content:
+                        name = findname[1]
+                        a = [int(num) for num in re.findall(r"\d+", message.content)]
+                        for i in userlep:
+                                        x = 0
+                                        if name in i:
+                                                b = [int(num) for num in re.findall(r"\d+", i)]
+                                                newini = b[0] - a[0]
+                                                newentry = name+': '+str(newini)
+                                                await Client.send_message(message.channel, 'Die LeP von '+name+' wurde um '+str(a[0])+' verringert')
+                                                x = 1
+                                                userlep.remove(i)
+                        if x == 0:
+                                await Client.send_message(message.channel, name+' ist nicht in der INI-Liste drin...')
+                        userlep.append(newentry)
+                elif '+' in message.content:
+                        name = findname[1]
+                        a = [int(num) for num in re.findall(r"\d+", message.content)]
+                        for i in userlep:
+                                        x = 0
+                                        if name in i:
+                                                b = [int(num) for num in re.findall(r"\d+", i)]
+                                                newini = b[0] + a[0]
+                                                newentry = name+': '+str(newini)
+                                                await Client.send_message(message.channel, 'Die LeP von '+name+' wurde um '+str(a[0])+' erhöht')
+                                                x = 1
+                                                userlep.remove(i)
+                        if x == 0:
+                                await Client.send_message(message.channel, name+' ist nicht in der LeP-Liste drin...')
+                        userlep.append(newentry)
+                elif 'löschen' in message.content:
+                                findname = re.sub("[^\w]", " ", message.content).split()
+                                name = findname[1]
+                                for i in userlep:
+                                        if name in i:
+                                                userlep.remove(i)
+                                                await Client.send_message(message.channel, name+" wurde aus der LeP-Liste entfernt!")
+                elif 'alle löschen' in message.content:
+                                if len(userlep) > 0:
+                                        await Client.send_message(message.channel, 'Die LeP-Liste wurde gelöscht')
+                                        userlep.clear()
+                                else:
+                                        await Client.send_message(message.channel, 'Die LeP-Liste ist bereits leer...')
+
+
+
         elif message.content.startswith('SF'):
                 if 'Aufmerksamkeit' in message.content:
                         await Client.send_message(message.channel, 'Aufmerksamkeit:\n Ein Held mit dieser Fähigkeit benötigt nureine Aktion (anstatt zweier), um sich im '
@@ -2332,5 +2465,474 @@ async def on_message(message):
                         'nutzen, oder dazu, eine Waffe aufzuheben. '
                         'Es ist möglich, eine zusätzliche Ansage zur '
                         'Erhöhung der Trefferpunkte zu machen. ')
-        
-Client.run("NjAwMjc5MDQ4MTkwNjg5MzAw.XVRYgA.gbSJd0dhMJL29ns16EY0vMYelh0")
+        elif message.content.startswith('Nachteil'):
+                if 'Aberglaube' in message.content:
+                        await Client.send_message(message.channel, 'Aberglaube (Schlechte Eigenschaft; je –1'
+                        'GP): \nAberglaube bezieht sich zumeist auf '
+                        'bestimmte Dinge, die dem Helden nach seiner '
+                        'Meinung Glück oder Pech bringen, vor '
+                        'denen er Angst hat. Wer diese Eigenschaft '
+                        'wählt, sollte die Details seines Aberglaubens '
+                        'näher festlegen. Bemerkenswert ist allerdings, '
+                        'dass einige Arten des Aberglaubens durchaus '
+                        'eine reale – wenn auch bisweilen völlig andere '
+                        '– Grundlage haben. ')
+                elif 'Albino' in message.content:
+                        await Client.send_message(message.channel, 'Albino (–7 GP): \nBei einem Albino – einer '
+                        'Veränderung von Geburt an, die bei allen '
+                        'menschlichen und menschenähnlichen Rassen '
+                        'vorkommen kann, wenn auch sehr selten '
+                        '– sind in Haut, Haaren und Augen keine '
+                        'Farbpigmente '
+                        'vorhanden. Die Haut ist daher '
+                        'rein weiß und bekommt bei geringster Sonneneinstrahlung '
+                        'bereits einen Sonnenbrand '
+                        '(ca. 1 SP pro Stunde Aufenthalt im Sonnenlicht), '
+                        'die Haare sind weiß, die Augen rot oder '
+                        '(selten) violett. Deswegen sind viele Albinos '
+                        'gleichzeitig auch lichtscheu oder gar lichtempfindlich '
+                        '(siehe Seite 266) und haben bei '
+                        'Tageslicht häufig eingeschränkte Sicht. Dazu '
+                        'kommt, dass Albinos meist mit Misstrauen '
+                        'betrachtet und bisweilen sogar für unheilige '
+                        'Wesen gehalten werden, was leicht dazu '
+                        'führt, dass man einen Albino als Sündenbock '
+                        'hernimmt, die Garde ruft, wenn er die Stadt '
+                        'betritt, ihm Ämter und Würden verweigert '
+                        'etc.: Jeder zusätzlich gewählte Punkt '
+                        'SO über 7 kostet ihn 2 GP. Anderseits '
+                        'ist es für einen Albino leichter (um 3 '
+                        'Punkte), Personen einzuschüchtern, '
+                        'und in archaischen Kulturen mag ein '
+                        'Albino durchaus als göttlicher oder dämonischer '
+                        'Sendbote gelten. '
+                        'Üblicherweise ist für Zauberproben, bei denen '
+                        'jemand eingeschüchtert werden soll (wie '
+                        'der HORRIPHOBUS), der CH-Wert des '
+                        'Albinos um 1 erhöht, für Proben, mit denen '
+                        'jemand beruhigt oder freundlich gestimmt '
+                        'werden soll (wie der BANNBALADIN), jedoch '
+                        'um 1 vermindert – beides natürlich nur, '
+                        'wenn das Opfer den Albino sehen kann. ')
+                elif 'Angst vor' in message.content:
+                        await Client.send_message(message.channel, 'Angst vor [Insekten, Spinnen, Reptilien, '
+                        'Pelztieren, Feuer, Wasser ...] (Schlechte '
+                        'Eigenschaft; unterschiedliche Kosten): \n'
+                        'Dies alles sind unterschiedliche Schlechte '
+                        'Eigenschaften, bei denen der Held mit übertriebener '
+                        'Angst auf bestimmte Situationen '
+                        'oder Begegnungen reagiert. Die Angst kann '
+                        'schnell in Panikzustände münden, bei denen '
+                        'der Held kaum noch zu vernünftigem Handeln '
+                        'in der Lage ist. Wovor der Held jeweils '
+                        'diese Phobie hat, hängt oft von seiner Kultur '
+                        'oder Herkunft ab, mitunter kann aber auch '
+                        'ein erschütterndes Schlüsselerlebnis zu einer '
+                        'solchen Angst führen. Auf jeden Fall kann '
+                        'dieser Nachteil nur wirklich als solcher gelten, '
+                        'wenn er den Helden im Spiel einschränkt '
+                        'und über das natürliche Maß der Selbsterhaltung '
+                        'hinausgeht. So etwas wie eine ‘Angst vor '
+                        'Albino-Löwen’ ist deutlich zu speziell, um '
+                        'gelten zu können, und auch eine Phobie wie '
+                        '‘Angst vor aggressiven Giftschlangen’ ist kein '
+                        'Nachteil, da jeder vernunftbegabte Mensch '
+                        'sie besitzt. '
+                        'Phobien mit häufigem Auslöser (wie Angst '
+                        'vor Insekten und Angst vor Feuer) bringen 3 '
+                        'GP pro 2 Punkte der Schlechten Eigenschaft, '
+                        'eher selten aktivierte Phobien wie Angst von '
+                        'fließendem Wasser jedoch nur 1 GP pro Punkt '
+                        'der Schlechten Eigenschaft. Einige spezielle '
+                        'und bei etlichen Lebewesen anzutreffende '
+                        'Ängste wie Meeresangst oder Dunkelangst sind '
+                        'weiter unten separat aufgeführt. ')
+                elif 'Animalische Magie' in message.content:
+                        await Client.send_message(message.channel, 'Animalische Magie (Magischer Nachteil;'
+                        'ZH, –1 GP pro Punkt): \nAlle astralen Dinge, '
+                        'die zu ‘kopflastig’ sind, verschließen sich dem '
+                        'Verständnis des Helden, er kann sich nur '
+                        'schlecht auf seine Zauberei konzentrieren '
+                        'und handelt eher ‘aus dem Bauch heraus’: '
+                        'Jede Zauberprobe oder Probe auf die Ritualkenntnis, '
+                        'bei der einmal auf die Eigenschaft '
+                        'Klugheit gewürfelt wird, ist um die Anzahl '
+                        'an Punkten in Animalischer Magie (max. 5) '
+                        'erschwert. Kommt Klugheit zweimal in der '
+                        'Probe vor, verdoppelt sich der Malus; solche '
+                        'Zauber (mit zweimal KL in der Probe) '
+                        'sind um eine Spalte schwieriger zu steigern. '
+                        'Dieser Nachteil kann nur von solchen Zauberkundigen '
+                        'gewählt werden, die Spruchzauberei '
+                        'beherrschen. Für Elfen und Kristallomanten '
+                        '(in der entsprechenden Tradition '
+                        'ausgebildete Zauberer), die ihre Proben anstatt '
+                        'auf KL teilweise auf IN ablegen dürfen, '
+                        'bringt der Nachteil nur 1 GP pro 2 Punkte in '
+                        'Animalischer Magie. ')
+                elif 'Arkanophobie' in message.content:
+                        await Client.send_message(message.channel, 'Arkanophobie (Schlechte Eigenschaft; je –3'
+                        'GP pro 2 Punkte): \nDer Held hat panische '
+                        'Angst davor, verzaubert zu werden, und '
+                        'fürchtet, dass alle magischen Gegenstände '
+                        'verflucht sind und ihm übel wollen. Der Held '
+                        'misstraut magisch begabten Kameraden und '
+                        'wird niemals einen Gegenstand verwenden, '
+                        'von dem er weiß, dass er verzaubert ist. Vor '
+                        'allem aber senkt die Arkanophobie die Magieresistenz '
+                        'des Charakters, wenn er weiß, dass '
+                        'er verzaubert werden soll. Der Nachteil sollte '
+                        'von Halb- und Vollzauberern nicht gewählt '
+                        'werden; er kann nicht gleichzeitig mit Vorurteile '
+                        'gegen Zauberer / gegen Magie genommen '
+                        'werden. Elfen können diesen Nachteil überhaupt '
+                        'nicht wählen. ')
+                elif 'Arroganz' in message.content:
+                        await Client.send_message(message.channel, 'Arroganz (Schlechte Eigenschaft; je –1 GP):\n'
+                        'Dieser Nachteil bringt den Helden dazu, '
+                        'sich allen anderen gegenüber hochnäsig zu '
+                        'benehmen und ihnen nichts oder fast nichts '
+                        'zuzutrauen, seine eigenen Fähigkeiten hingegen '
+                        'zu überschätzen. Ob dies als Standesdünkel, '
+                        'Besserwisserei oder als krankhaftes, '
+                        'übertriebenes Ehrgefühl daherkommt, ist '
+                        'dem Spieler überlassen, jedoch sollten speziell '
+                        'Proben auf passende Gesellschaftliche Talente '
+                        'hierdurch erschwert werden. ')
+                elif 'Artefaktgebunden' in message.content:
+                        await Client.send_message(message.channel, 'Artefaktgebunden (Magischer Nachteil; '
+                        'ZHV; –7 GP)*: \nDer Zauberer hat beim Binden '
+                        'eines Traditionsartefaktes (Zauberstab, '
+                        'Kristallkugel, Schale, Schwert, Goldsichel, '
+                        'Schamanenkeule, Druidendolch, iama) einen '
+                        'schweren Fehler begangen und ist nun '
+                        'beim Ausführen von Zaubern an das Artefakt '
+                        'gebunden. (In seltenen Fällen mag dies auch '
+                        'bei anderen Artefaktbindungen und -erstellungen '
+                        'geschehen, jedoch niemals freiwillig.) '
+                        'Alle Zauberproben, '
+                        'die er ausführt, ohne '
+                        'Hautkontakt mit dem Artefakt zu haben, '
+                        'unterliegen den Regeln einer Spontanen Modifikation '
+                        'der Zaubertechnik '
+                        '(siehe Wege der '
+                        'Zauberei), d.h., der Zauber muss 7 ZfP aufbringen '
+                        '(Zauber, in denen er eine ZfW von '
+                        'weniger als 7 hat, misslingen automatisch), '
+                        'die Zauberdauer verlängert sich um 3 Aktionen '
+                        'und er kann keine weiteren Spontanen '
+                        'Modifikationen durchführen. '
+                        'Wird das Artefakt zerstört, ist die Bindung '
+                        'gebrochen und der Zauberer kann wieder '
+                        'ungehindert zaubern; jedoch verliert er 3 '
+                        'permanente AsP und 1 Punkt seiner höchsten '
+                        'geistigen Eigenschaft (MU, KL, IN oder '
+                        'CH). Nur Zauberer, die über ein gebundenes '
+                        'Artefakt verfügen, können den Nachteil wählen: '
+                        'Magier, Elfen, Druiden, Geoden, '
+                        'Kristallomanten, '
+                        'Schamanen und Alchimisten. '
+                        'Hexen ist es möglich, dass statt eines gebundenen '
+                        'Artefakts (des Hexenkessels) der Vertraute '
+                        'einen Teil der Essenz der Hexe trägt. ')
+                elif 'Astraler Block' in message.content:
+                        await Client.send_message(message.channel, 'Astraler Block (Magischer Nachteil; ZHV; '
+                        '–5 / –10 GP): \nEin Charakter mit diesem '
+                        'Nachteil regeneriert pro Ruhephase nur '
+                        '1W6–1 AsP; eventuelle Intuitions-Würfe '
+                        'zur Rückgewinnung verlorener Astralpunkte '
+                        'und bei Ritualen zum Erlangen eines höheren '
+                        'AsP-Grundwerts sind um 2 Punkte erschwert. '
+                        'Dieser Nachteil kann natürlich nur '
+                        'von Helden gewählt werden, die über Astralenergie '
+                        'verfügen; eine Kombination mit dem '
+                        'Vorteil Astrale Regeneration ist nicht möglich; '
+                        'der Erwerb der Sonderfertigkeiten Regeneration '
+                        'I und II sowie Meisterliche Regeneration '
+                        'kosten einen Helden mit Astralem Block das '
+                        'Doppelte der angegebenen Kosten. Voll- und '
+                        'Halbzauberer erhalten durch diesen Nachteil '
+                        '10 GP, Viertelzauberer nur 5 GP ')
+                elif 'Autoritätsgläubig' in message.content:
+                        await Client.send_message(message.channel, 'Autoritätsgläubig (Schlechte Eigenschaft; je '
+                        '–1 GP pro 2 Punkte): Dieser Nachteil äußert '
+                        'sich in Buchgelehrsamkeit und Obrigkeitshörigkeit. '
+                        'Entscheidungen der Kirchenoberen '
+                        'oder weltlicher Herrscher werden von dem '
+                        'Helden nicht angezweifelt – es hat schließlich '
+                        'seinen Grund, dass diese Menschen über '
+                        'ihn gesetzt wurden. Ebenso wenig stellt er '
+                        'die Theorien hoch angesehener Gelehrter '
+                        'in Frage; selbst dann nicht, wenn das, was in '
+                        'den Büchern steht, der eigenen Erfahrung '
+                        'oder dem gesunden Menschenverstand widerspricht. '
+                        'Sobald der Held etwas tut, was der Anweisung '
+                        'eines '
+                        'Höhergestellten oder der Aussage eines '
+                        'anerkannten Gelehrten zuwiderläuft, kann '
+                        'der Meister eine Probe verlangen und beim '
+                        'Gelingen der Probe diese Aktivität verbieten. '
+                        'Oder aber er erschwert alle Talent- und Eigenschaftsproben, '
+                        'die während des Verstoßes '
+                        'abzulegen sind oder in irgendeinem Zusammenhang '
+                        'damit stehen, entsprechend der Regeln '
+                        'zu Schlechten Eigenschaften (Seite 268). ')
+                elif 'Behäbig' in message.content:
+                        await Client.send_message(message.channel, 'Behäbig (–5 GP): Ein behäbiger Held bewegt '
+                        'sich langsamer und bedächtiger als andere '
+                        'Mitglieder seiner Rasse. Seine Basis-GS sinkt '
+                        'um 1 und er erhält einen Malus von 1 Punkt '
+                        'auf alle Ausweichen-Proben. Außerdem ist sein '
+                        'Grundwert zur Bestimmung von Sprungweiten '
+                        'und -höhen (üblicherweise (GE+KK– '
+                        'BE) um 1 Punkt vermindert. Dieser Nachteil '
+                        'kann nur einmal gewählt werden. Nicht '
+                        'kombinierbar mit Flink (Seite 251). ')
+                elif 'Blutdürstig' in message.content:
+                        await Client.send_message(message.channel, 'Blutdurst (Schlechte Eigenschaft; je –1 '
+                        'GP für 2 Punkte): Der Charakter liebt es, '
+                        'seine Gegner langsam und blutig zu töten. '
+                        'Er empfindet Vergnügen daran, Opfer zu '
+                        'quälen und anderen Schmerzen zuzufügen. '
+                        'Dazu nutzt er jede sich bietende Gelegenheit, '
+                        'Ehre gilt ihm dabei nichts, und Unterlegene '
+                        'sind willkommene Opfer, solange sie sich nur '
+                        'wehren. Seine Obsession führt dazu, dass er '
+                        'länger als nötig auf Schlachtfeldern verweilt, '
+                        'um Verwundete zu töten, oder dass er wichtige '
+                        'Informanten ermordet. Ein solcher Charakter '
+                        'kann keinen Moralkodex annehmen, '
+                        'der Gewalttätigkeit ausschließt. (Und selbst '
+                        'in der Kor-Kirche haben Blutdürstige eigentlich ')
+                        'keinen Platz.) '
+                elif 'Blutrausch' in message.content:
+                        await Client.send_message(message.channel, 'Blutrausch (–15 GP): Der Held fällt in einen '
+                        'Blutrausch (bei den Thorwalern auch '
+                        'als Walwut oder Swafskari gefürchtet), sobald '
+                        'eines der drei folgend genannten Ereignisse '
+                        'eintritt: spontaner Zorn (z.B. eine deutlich '
+                        'gelungene Jähzorn-Probe), Erleiden einer '
+                        'Wunde durch einen Nahkampfangriff und '
+                        'Scheitern einer darauf folgenden Selbstbeherrschungs- '
+                        'Probe (erschwert um die Zahl '
+                        'der SP über der Wundschwelle) sowie die '
+                        'Einnahme bestimmter aggressionsfördernder '
+                        'Substanzen (allgemein: alle Rauschmittel, '
+                        'deren Genuss den MU-Wert anhebt, darunter '
+                        'auch Alkohol). '
+                        'Im Blutrausch setzt der Rasende seine gefährlichsten '
+                        'Waffen (auch Wurfwaffen oder '
+                        'Zauberei, nicht aber so komplexe Waffen '
+                        'wie Schusswaffen) gegen die missliebigste, '
+                        'wenn nicht vorhanden, dann die nächststehende '
+                        'Person ein. MU, AT und TP sind '
+                        'um 5 Punkte erhöht, der Rasende pariert '
+                        'nicht und nimmt keine Schmerzen wahr '
+                        '(der Meister '
+                        'notiert die erlittenen Schadenspunkte '
+                        'des Helden verdeckt). Talent- oder '
+                        'Zauberproben sind während des Blutrauschs '
+                        'um 7 Punkte erschwert, Kampfmanöver (inklusive '
+                        'Umwandeln von Aktionen) oder irgendwelche '
+                        'Aktivitäten, die einen ‘wachen '
+                        'Geist’ oder längere Vorbereitung verlangen, '
+                        'sind unter Blutrausch nicht möglich, ebenso '
+                        'wenig die Aktion Orientieren. Zu den verbotenen '
+                        'Aktionen zählen ausdrücklich auch '
+                        'Spontane Modifikationen von Zaubern, '
+                        'nicht jedoch der Einsatz von Varianten. Der '
+                        'Blutrausch dauert so lange, bis der Rasende '
+                        'keine Ausdauer mehr hat (er verliert für jede '
+                        'AT 2 AuP, kann aber Atem Holen) und entkräftet '
+                        'zusammenbricht. Blutrausch und der '
+                        'Vorteil Kampfrausch sind nicht miteinander '
+                        'kombinierbar. ')
+                elif 'Brünstigkeit' in message.content:
+                        await Client.send_message(message.channel, 'Brünstigkeit (Schlechte Eigenschaft; je –1 '
+                        'GP für 2 Punkte Brünstigkeit): '
+                        'Der Charakter '
+                        'zeigt ein unerschöpfliches sexuelles Verlangen, '
+                        'andere Lebewesen dienen ihm dabei '
+                        'nur zur Befriedigung seiner Gelüste, ob nun '
+                        'willig oder nicht. Dies führt allerdings auch '
+                        'oft dazu, dass er vor lauter Geilheit seine '
+                        'Umgebung völlig vernachlässigt – leicht bekleidete '
+                        'Amazonen haben im Kampf gegen '
+                        'einen brünstigen Mann z.B. leichtes Spiel '
+                        'und Betören-Versuche gegen ihn sind um seinen '
+                        'Wert in Brünstigkeit erleichtert. ')
+                elif 'Dunkelangst' in message.content:
+                        await Client.send_message(message.channel, 'Dunkelangst (Schlechte Eigenschaft; '
+                        'je –2 GP): Der Held bekommt Beklemmungsgefühle '
+                        'durch Dunkelheit: Dies mögen '
+                        'dunkle Tunnel und Höhlen, aber auch '
+                        'finstere Wälder, vor allem aber einfach die '
+                        'Schwärze der Nacht sein. Schon das Hereinbrechen '
+                        'der Dämmerung ohne die Aussicht '
+                        'auf Beleuchtung macht den Helden nervös, '
+                        'das Erlöschen der letzten Fackel im dunklen '
+                        'Stollen treibt ihn an den Rand des Wahnsinns. '
+                        'Diese Phobie ist so schwerwiegend, '
+                        'dass der Held für einen Punkt der Schlechten '
+                        'Eigenschaft 2 Generierungspunkte '
+                        'erhält.')
+                elif 'Einarmig' in message.content:
+                        await Client.send_message(message.channel, 'Einarmig (–15 GP): Der Held hat einen'
+                        'Arm verloren (den linken bei Rechtshändern '
+                        'bzw. umgekehrt). Bei allen Handlungen, '
+                        'die eigentlich beide Hände erfordern, sind '
+                        'entsprechende Eigenschaftsproben um 5 '
+                        'Punkte erschwert, Talentproben sogar um '
+                        '10 Punkte. Bestimmte '
+                        'Handlungen (Bogenschießen, '
+                        'Führen zweihändiger '
+                        'Waffen) sind '
+                        'überhaupt nicht möglich; einarmige Helden '
+                        'können keine Sonderfertigkeiten '
+                        'erwerben '
+                        'oder anwenden, die mit dem links- oder '
+                        'beidhändigen Kampf verbunden sind, und '
+                        'keine Schilde oder Parierwaffen führen; bei '
+                        'bestimmten Balanceakten kann der Meister '
+                        'einem Einarmigen eine Probe um bis zu 3 '
+                        'Punkte erschweren. '
+                        'Als schwächere Form dieses Nachteils (–7 '
+                        'GP) könnte ein teilweise gelähmter oder '
+                        'verkrüppelter Arm gelten, der Eigenschaftsproben '
+                        'um 2, Talentproben um 5 Punkte '
+                        'behindert. '
+                        'Diese körperliche Behinderung ist so tiefgehend, '
+                        'dass sie im späteren Spielverlauf nicht '
+                        'durch eine auch noch so gute Prothese oder '
+                        'Zauberei wieder wettgemacht werden kann. '
+                        'Natürlich kann Einarmig nicht mit Einhändig '
+                        'kombiniert werden. ')
+                elif 'Einäugig' in message.content:
+                        await Client.send_message(message.channel, 'Einäugig (–5 GP): Der Held hat irgendwann '
+                        'im Verlauf seines bisherigen Lebens '
+                        'das Augenlicht eines Auges oder gar das Auge '
+                        'selbst verloren. Er erleidet einen Malus '
+                        'von 4 Punkten bei allen Wurfwaffen- '
+                        'Proben und bei Schusswaffen- '
+                        'Proben '
+                        'unter 10 Schritt Entfernung. Außerdem '
+                        'ist sein Kontrollbereich (siehe '
+                        'Wege des Schwerts) um die Hälfte '
+                        'eingeschränkt. '
+                        'Einäugige Zauberer erleiden eine Erschwernis '
+                        'von 4 Punkten, wann immer sie einen '
+                        'Zauber besonders zielen müssen (wie bei '
+                        'einem Zauber, dessen Reichweite Horizont '
+                        'ist, wenn er den Nachteil Zielschwierigkeiten '
+                        'auf sich genommen hat oder in besonderen '
+                        'Situationen). Siehe auch den Nachteil Eingeschränkter '
+                        'Sinn auf Seite 262. '
+                        'Diese körperliche Behinderung ist so tiefgehend, '
+                        'dass sie im späteren Spielverlauf weder '
+                        'durch Magie noch auf andere Weise wettgemacht '
+                        'werden kann. ')
+                elif 'Einbeinig' in message.content:
+                        await Client.send_message(message.channel, 'Einbeinig (–25 GP): Dem Held fehlt ein '
+                        'Bein, das er bei einem früheren Unfall, '
+                        'Kampf oder ähnlichem verloren hat. Er erleidet '
+                        'einen Verlust von 5 Punkten auf seine Gewandtheit '
+                        '(was sich auch auf seine Kampf- '
+                        'Basiswerte niederschlägt) und von 3 Punkten '
+                        'auf seine GS (die jedoch mindestens 1 bleibt). '
+                        'Diese körperliche Behinderung ist so tiefgehend, '
+                        'dass sie im späteren Spielverlauf nicht '
+                        'durch eine auch noch so gute Prothese oder '
+                        'durch Zauberei wieder wettgemacht werden '
+                        'kann. Einbeinig kann nicht mit Lahm kombiniert '
+                        'werden. ')
+                elif 'Einbildungen' in message.content:
+                        await Client.send_message(message.channel, 'Einbildungen (–5 GP): Der Held glaubt, '
+                        'aus einer übersteigerten Phantasie oder beginnendem '
+                        'Wahnsinn heraus, immer wieder '
+                        'Dinge wahrzunehmen, die in Wirklichkeit '
+                        'nicht existieren. Das können scheinbare Beobachter '
+                        'oder Verfolger sein, aber auch niemals '
+                        'so gemeinte Vorwürfe und Anschuldigungen '
+                        'von anderen Personen (z.B. wenn der '
+                        'Held glaubt, jegliche andere Meinung sei ein '
+                        'persönlicher Angriff). Einbildungen lässt sich '
+                        'nicht mit Wahnvorstellungen kombinieren. ')
+                elif 'Eingeschränkte Elementarnähe' in message.content:
+                        await Client.send_message(message.channel, 'Eingeschränkte Elementarnähe (H; –3'
+                        'GP)*: Zu den Eigenheiten schamanistischer '
+                        'Magie gehört, dass jede Schamanen-Tradition '
+                        'nur Umgang mit dreien der sechs Elemente '
+                        'pflegt (diese sind jeweils bei der Profession '
+                        'angegeben). Diese drei beherrscht der '
+                        'Schamane alle gleich gut, also ohne Einbußen, '
+                        'selbst wenn sich zwei gegensätzliche '
+                        'darunter befinden. Wesen und Manifestationen '
+                        'der anderen Elemente dagegen kann er '
+                        'nicht rufen, weder mit dem Ritual Meister der '
+                        'Elemente noch auf anderem magischen Weg. '
+                        'Dieser Nachteil ist mit dem Vorteil Affinität '
+                        'zu Elementaren kombinierbar. '
+                        'Die Geoden '
+                        'der Brobim sind ebenfalls mit diesem Nachteil '
+                        'behaftet. ')
+                elif 'Eingeschränkter Sinn' in message.content:
+                        await Client.send_message(message.channel, 'Eingeschränkter Sinn (–5 GP): Ein Sinn '
+                        'des Helden ist besonders schlecht ausgebildet: '
+                        'Alle Sinnenschärfe-Proben, die '
+                        'sich auf diesen Sinn beziehen, sind um '
+                        '5 Punkte erschwert, und je nach Situation '
+                        'kann der Meister dem Helden '
+                        'auch Proben nicht zugestehen, die er '
+                        'anderen Helden erlaubt. Es gibt vier unterschiedliche '
+                        'Bereiche, auf die sich dieser '
+                        'Vorteil beziehen kann: '
+                        'Ein schwerhöriger Held nimmt zwar normal '
+                        'laute Geräusche wahr, aber zum Beispiel '
+                        'kein Flüstern. Verständigung in einer Sprache, '
+                        'die er nur unzureichend beherrscht, ist '
+                        'immer schwieriger als bei einem normal hörenden '
+                        'Helden. '
+                        'Kurzsichtig bezieht sich auf die Sicht des '
+                        'Helden: Alles, was mehr als zehn Schritt weit '
+                        'entfernt ist, wird immer verschwommener, '
+                        'und auf Strecken von 100 Schritt und mehr '
+                        'sind nur noch Konturen zu erkennen '
+                        '– was entsprechende Fernkampfproben '
+                        'und auch das Ausweichen vor '
+                        'einem Fernkampfangriff schwerer '
+                        'macht (nach Meistermaßgabe). '
+                        'Die Sicht auf kurze Entfernung '
+                        'ist nicht eingeschränkt. ')
+                        await Client.send_message(message.channel, 'Gerade Kurzsichtigkeit schränkt (Spruch-) '
+                        'Zauberer deutlich ein, da dieser Nachteil alle '
+                        'Zauberproben auf Entfernung um je einen '
+                        'Punkt pro Entfernungskategorie (1 Schritt / '
+                        '3 Schritt / 7 Schritt / 21 Schritt / 49 Schritt / '
+                        'Horizont) erschwert. '
+                        'Ein eingeschränkter Tastsinn lässt den Helden '
+                        'nur unter Schwierigkeiten Dinge ertasten, '
+                        'und je nach Situation kann der Meister auf '
+                        'Talentproben, in denen Fingerfertigkeit verlangt '
+                        'ist und bei denen der Tastsinn eine '
+                        'große Rolle spielt (wie Feinmechanik oder '
+                        'Schlösser Knacken, aber auch Heilkunde Wunden), '
+                        'einen Zuschlag in Höhe von 1 bis 3 '
+                        'Punkten verlangen. '
+                        'Der eingeschränkte Geruchssinn bezieht sich '
+                        'sowohl auf Gerüche als auch auf Geschmack, '
+                        'denn diese beiden Sinne sind schwer zu trennen. '
+                        'Ein Held mit diesem Nachteil nimmt '
+                        'Gerüche und Geschmack nur dann wahr, '
+                        'wenn sie wirklich penetrant sind (was ihn bei '
+                        'Speisen und Getränken auch nicht gerade '
+                        'wählerisch macht). In diesem Fall ist nicht '
+                        'nur die Sinnenschärfe betroffen, sondern '
+                        'auch alle Proben in Kochen sind ebenfalls '
+                        'um 5 Punkte erschwert; außerdem steigt die '
+                        'Gefahr, sich durch verdorbene Lebensmittel '
+                        'einen Flinken Difar oder gar eine Lebensmittelvergiftung '
+                        'zuzuziehen. ')
+
+
+
+Client.run("NjAwMjc5MDQ4MTkwNjg5MzAw.XVT-rQ.BFnvzy2Zgkq9cAxaMnODECMmsa4")
